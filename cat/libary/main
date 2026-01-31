@@ -39,7 +39,8 @@ function Catlib:CreateLoadingScreen(config)
         Name = "CatlibLoadingScreen",
         Parent = CoreGui,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true
     })
     
     local mainFrame = CreateInstance("Frame", {
@@ -129,53 +130,54 @@ function Catlib:CreateLoadingScreen(config)
     
     if mode == "modern" then
         mainFrame.BackgroundTransparency = 1
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = false
+        if iconLabel then iconLabel.ImageTransparency = 1 end
+        if titleLabel then titleLabel.TextTransparency = 1 end
+        loadingText.TextTransparency = 1
+        loadingBarBackground.BackgroundTransparency = 1
+        loadingBar.BackgroundTransparency = 1
+        
+        task.spawn(function()
+            task.wait(0.1)
+            
+            Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            
+            task.wait(0.3)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.1)
-        
-        Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        
-        task.wait(0.3)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = true
-                child.BackgroundTransparency = 1
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    local originalTransparency = child.ImageTransparency or 0
-                    child.ImageTransparency = 1
-                    child.TextTransparency = 1
-                    Tween(child, {ImageTransparency = originalTransparency, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                end
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.6)
-        
-        local loadingDuration = 2.5
-        Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-        
-        task.wait(loadingDuration)
-        task.wait(0.3)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    Tween(child, {ImageTransparency = 1, TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
+            Tween(loadingText, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(loadingBarBackground, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(loadingBar, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            task.wait(0.6)
+            
+            local loadingDuration = 2.5
+            Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+            
+            task.wait(loadingDuration)
+            task.wait(0.3)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
             end
-        end
-        
-        task.wait(0.5)
-        
-        Tween(mainFrame, {BackgroundTransparency = 1}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-        
-        task.wait(0.7)
-        screenGui:Destroy()
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            end
+            Tween(loadingText, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            Tween(loadingBarBackground, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            Tween(loadingBar, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            
+            task.wait(0.5)
+            
+            Tween(mainFrame, {BackgroundTransparency = 1}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+            
+            task.wait(0.7)
+            screenGui:Destroy()
+        end)
         
     else
         local backgroundOverlay = CreateInstance("Frame", {
@@ -189,54 +191,57 @@ function Catlib:CreateLoadingScreen(config)
         })
         
         mainFrame.BackgroundTransparency = 1
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = false
+        if iconLabel then iconLabel.ImageTransparency = 1 end
+        if titleLabel then titleLabel.TextTransparency = 1 end
+        loadingText.TextTransparency = 1
+        loadingBarBackground.BackgroundTransparency = 1
+        loadingBar.BackgroundTransparency = 1
+        
+        task.spawn(function()
+            task.wait(0.1)
+            
+            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            task.wait(0.3)
+            
+            Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.1)
-        
-        Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        task.wait(0.3)
-        
-        Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = true
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    child.ImageTransparency = 1
-                    child.TextTransparency = 1
-                    Tween(child, {ImageTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                end
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.4)
-        
-        local loadingDuration = 2.5
-        Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-        
-        task.wait(loadingDuration)
-        task.wait(0.3)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    Tween(child, {ImageTransparency = 1, TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
+            Tween(loadingText, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(loadingBarBackground, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(loadingBar, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            task.wait(0.4)
+            
+            local loadingDuration = 2.5
+            Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+            
+            task.wait(loadingDuration)
+            task.wait(0.3)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
             end
-        end
-        
-        task.wait(0.4)
-        
-        Tween(mainFrame, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-        Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 0, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-        
-        task.wait(0.6)
-        screenGui:Destroy()
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            end
+            Tween(loadingText, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            Tween(loadingBarBackground, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            Tween(loadingBar, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            
+            task.wait(0.4)
+            
+            Tween(mainFrame, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 0, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            
+            task.wait(0.6)
+            screenGui:Destroy()
+        end)
     end
 end
 
@@ -255,7 +260,8 @@ function Catlib:CreateKeySystem(config)
         Name = "CatlibKeySystem",
         Parent = CoreGui,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true
     })
     
     local mainFrame = CreateInstance("Frame", {
@@ -417,13 +423,17 @@ function Catlib:CreateKeySystem(config)
         local enteredKey = keyInput.Text
         if enteredKey == correctKey then
             if mode == "modern" then
-                for _, child in pairs(mainFrame:GetChildren()) do
-                    if child:IsA("GuiObject") then
-                        if child:IsA("TextLabel") or child:IsA("ImageLabel") or child:IsA("TextButton") then
-                            Tween(child, {ImageTransparency = 1, TextTransparency = 1, BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                        end
-                    end
+                if iconLabel then
+                    Tween(iconLabel, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 end
+                if titleLabel then
+                    Tween(titleLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                end
+                Tween(inputKeyLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(inputBorder, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(keyInput, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(getKeyButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(confirmButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 
                 task.wait(0.5)
                 
@@ -435,13 +445,17 @@ function Catlib:CreateKeySystem(config)
             else
                 local backgroundOverlay = screenGui:FindFirstChild("BackgroundOverlay")
                 
-                for _, child in pairs(mainFrame:GetChildren()) do
-                    if child:IsA("GuiObject") then
-                        if child:IsA("TextLabel") or child:IsA("ImageLabel") or child:IsA("TextButton") then
-                            Tween(child, {ImageTransparency = 1, TextTransparency = 1, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                        end
-                    end
+                if iconLabel then
+                    Tween(iconLabel, {ImageTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 end
+                if titleLabel then
+                    Tween(titleLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                end
+                Tween(inputKeyLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(inputBorder, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(keyInput, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(getKeyButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+                Tween(confirmButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
                 
                 task.wait(0.4)
                 
@@ -465,37 +479,35 @@ function Catlib:CreateKeySystem(config)
     
     if mode == "modern" then
         mainFrame.BackgroundTransparency = 1
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = false
+        if iconLabel then iconLabel.ImageTransparency = 1 end
+        if titleLabel then titleLabel.TextTransparency = 1 end
+        inputKeyLabel.TextTransparency = 1
+        inputBorder.BackgroundTransparency = 1
+        keyInput.TextTransparency = 1
+        getKeyButton.BackgroundTransparency = 1
+        getKeyButton.TextTransparency = 1
+        confirmButton.BackgroundTransparency = 1
+        confirmButton.TextTransparency = 1
+        
+        task.spawn(function()
+            task.wait(0.1)
+            
+            Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            
+            task.wait(0.3)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.1)
-        
-        Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        
-        task.wait(0.3)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = true
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    local originalTransparency = child.ImageTransparency or 0
-                    child.ImageTransparency = 1
-                    child.TextTransparency = 1
-                    Tween(child, {ImageTransparency = originalTransparency, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                elseif child:IsA("Frame") then
-                    for _, button in pairs(child:GetChildren()) do
-                        if button:IsA("TextButton") then
-                            button.BackgroundTransparency = 1
-                            button.TextTransparency = 1
-                            Tween(button, {BackgroundTransparency = 0, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                        end
-                    end
-                end
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
+            Tween(inputKeyLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(inputBorder, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(keyInput, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(getKeyButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(confirmButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        end)
         
     else
         local backgroundOverlay = CreateInstance("Frame", {
@@ -509,38 +521,37 @@ function Catlib:CreateKeySystem(config)
         })
         
         mainFrame.BackgroundTransparency = 1
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = false
+        if iconLabel then iconLabel.ImageTransparency = 1 end
+        if titleLabel then titleLabel.TextTransparency = 1 end
+        inputKeyLabel.TextTransparency = 1
+        inputBorder.BackgroundTransparency = 1
+        keyInput.TextTransparency = 1
+        getKeyButton.BackgroundTransparency = 1
+        getKeyButton.TextTransparency = 1
+        confirmButton.BackgroundTransparency = 1
+        confirmButton.TextTransparency = 1
+        
+        task.spawn(function()
+            task.wait(0.1)
+            
+            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            task.wait(0.3)
+            
+            Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            
+            if iconLabel then
+                Tween(iconLabel, {ImageTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
-        
-        task.wait(0.1)
-        
-        Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        task.wait(0.3)
-        
-        Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        for _, child in pairs(mainFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
-                child.Visible = true
-                if child:IsA("TextLabel") or child:IsA("ImageLabel") then
-                    child.ImageTransparency = 1
-                    child.TextTransparency = 1
-                    Tween(child, {ImageTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                elseif child:IsA("Frame") then
-                    for _, button in pairs(child:GetChildren()) do
-                        if button:IsA("TextButton") then
-                            button.BackgroundTransparency = 1
-                            button.TextTransparency = 1
-                            Tween(button, {BackgroundTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                        end
-                    end
-                end
+            if titleLabel then
+                Tween(titleLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             end
-        end
+            Tween(inputKeyLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(inputBorder, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(keyInput, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(getKeyButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            Tween(confirmButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        end)
     end
 end
 
