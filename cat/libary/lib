@@ -1,528 +1,243 @@
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 
 local Catlib = {}
 Catlib.__index = Catlib
 
-local function CreateInstance(class, properties)
-    local instance = Instance.new(class)
-    for property, value in pairs(properties) do
-        if property ~= "Parent" then
-            instance[property] = value
+local function Create(class, props)
+    local inst = Instance.new(class)
+    for i,v in pairs(props) do
+        if i ~= "Parent" then
+            inst[i] = v
         end
     end
-    if properties.Parent then
-        instance.Parent = properties.Parent
-    end
-    return instance
+    inst.Parent = props.Parent
+    return inst
 end
 
-local function Tween(object, properties, duration, style, direction)
-    local tweenInfo = TweenInfo.new(duration or 0.3, style or Enum.EasingStyle.Quad, direction or Enum.EasingDirection.Out)
-    local tween = TweenService:Create(object, tweenInfo, properties)
-    tween:Play()
-    return tween
+local function Tween(obj,props,time,style,dir)
+    local t = TweenService:Create(obj,TweenInfo.new(time or .4,style or Enum.EasingStyle.Quad,dir or Enum.EasingDirection.Out),props)
+    t:Play()
+    return t
 end
 
-function Catlib:CreateLoadingScreen(config)
+function Catlib:Loading(config)
     config = config or {}
-    local mode = config.Mode or "modern"
+    local mode = config.Mode or "Modern"
     local icon = config.Icon
     local title = config.Title
-    local loadingBarColor = config.LoadingBarColor or Color3.fromRGB(255, 255, 255)
-    local textColor = config.TextColor or Color3.fromRGB(255, 255, 255)
-    
-    local screenGui = CreateInstance("ScreenGui", {
-        Name = "CatlibLoadingScreen",
-        Parent = CoreGui,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false,
-        IgnoreGuiInset = true
+    local barColor = config.LoadingBarColor or Color3.fromRGB(255,255,255)
+    local textColor = config.TextColor or Color3.fromRGB(255,255,255)
+
+    local gui = Create("ScreenGui",{Name="CatlibLoading",Parent=CoreGui,IgnoreGuiInset=true,ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
+
+    local frame = Create("Frame",{
+        Parent=gui,
+        Size=UDim2.fromOffset(620,340),
+        Position=UDim2.fromScale(.5,.5),
+        AnchorPoint=Vector2.new(.5,.5),
+        BackgroundColor3=Color3.fromRGB(22,22,22),
+        BorderSizePixel=0
     })
-    
-    local mainFrame = CreateInstance("Frame", {
-        Name = "MainFrame",
-        Size = UDim2.new(0, 650, 0, 370),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-        BorderSizePixel = 0,
-        Parent = screenGui
-    })
-    
-    local iconLabel
+
+    Create("UICorner",{Parent=frame,CornerRadius=UDim.new(0,8)})
+
+    local iconObj
     if icon then
-        iconLabel = CreateInstance("ImageLabel", {
-            Name = "Icon",
-            Size = UDim2.new(0, 80, 0, 80),
-            Position = UDim2.new(0.5, 0, 0.28, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Image = icon,
-            Parent = mainFrame
+        iconObj = Create("ImageLabel",{
+            Parent=frame,
+            BackgroundTransparency=1,
+            Size=UDim2.fromOffset(90,90),
+            Position=UDim2.fromScale(.5,.32),
+            AnchorPoint=Vector2.new(.5,.5),
+            Image=icon
         })
     end
-    
-    local titleLabel
+
+    local titleObj
     if title then
-        titleLabel = CreateInstance("TextLabel", {
-            Name = "Title",
-            Size = UDim2.new(1, 0, 0, 45),
-            Position = UDim2.new(0.5, 0, 0.52, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Text = title,
-            TextColor3 = textColor,
-            TextSize = 26,
-            Font = Enum.Font.GothamBold,
-            Parent = mainFrame
+        titleObj = Create("TextLabel",{
+            Parent=frame,
+            BackgroundTransparency=1,
+            Size=UDim2.fromOffset(500,40),
+            Position=UDim2.fromScale(.5,.52),
+            AnchorPoint=Vector2.new(.5,.5),
+            Text=title,
+            Font=Enum.Font.GothamBold,
+            TextSize=28,
+            TextColor3=textColor
         })
     end
-    
-    local loadingText = CreateInstance("TextLabel", {
-        Name = "LoadingText",
-        Size = UDim2.new(1, 0, 0, 30),
-        Position = UDim2.new(0.5, 0, 0.7, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        Text = "Loading...",
-        TextColor3 = textColor,
-        TextSize = 18,
-        Font = Enum.Font.Gotham,
-        Parent = mainFrame
+
+    local loadingText = Create("TextLabel",{
+        Parent=frame,
+        BackgroundTransparency=1,
+        Size=UDim2.fromOffset(400,30),
+        Position=UDim2.fromScale(.5,.66),
+        AnchorPoint=Vector2.new(.5,.5),
+        Text="Loading...",
+        Font=Enum.Font.Gotham,
+        TextSize=18,
+        TextColor3=textColor
     })
-    
-    local loadingBarBackground = CreateInstance("Frame", {
-        Name = "LoadingBarBackground",
-        Size = UDim2.new(0, 550, 0, 4),
-        Position = UDim2.new(0.5, 0, 0.88, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-        BorderSizePixel = 0,
-        Parent = mainFrame
+
+    local barBG = Create("Frame",{
+        Parent=frame,
+        Size=UDim2.fromOffset(520,4),
+        Position=UDim2.fromScale(.5,.85),
+        AnchorPoint=Vector2.new(.5,.5),
+        BackgroundColor3=Color3.fromRGB(45,45,45),
+        BorderSizePixel=0
     })
-    
-    local loadingBar = CreateInstance("Frame", {
-        Name = "LoadingBar",
-        Size = UDim2.new(0, 0, 1, 0),
-        BackgroundColor3 = loadingBarColor,
-        BorderSizePixel = 0,
-        Parent = loadingBarBackground
+
+    local bar = Create("Frame",{
+        Parent=barBG,
+        Size=UDim2.new(0,0,1,0),
+        BackgroundColor3=barColor,
+        BorderSizePixel=0
     })
-    
-    if mode == "modern" then
-        mainFrame.BackgroundTransparency = 1
-        if iconLabel then iconLabel.ImageTransparency = 1 end
-        if titleLabel then titleLabel.TextTransparency = 1 end
-        loadingText.TextTransparency = 1
-        loadingBarBackground.BackgroundTransparency = 1
-        loadingBar.BackgroundTransparency = 1
-        
-        task.spawn(function()
-            task.wait(0.1)
-            
-            Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-            
-            task.wait(0.3)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            Tween(loadingText, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(loadingBarBackground, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(loadingBar, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            task.wait(0.6)
-            
-            local loadingDuration = 2.5
-            Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-            
-            task.wait(loadingDuration)
-            task.wait(0.3)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            end
-            Tween(loadingText, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            Tween(loadingBarBackground, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            Tween(loadingBar, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            
-            task.wait(0.5)
-            
-            Tween(mainFrame, {BackgroundTransparency = 1}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-            
-            task.wait(0.7)
-            screenGui:Destroy()
-        end)
-        
+
+    if mode=="Modern" then
+        frame.BackgroundTransparency=1
+        if iconObj then iconObj.ImageTransparency=1 end
+        if titleObj then titleObj.TextTransparency=1 end
+        loadingText.TextTransparency=1
+        barBG.BackgroundTransparency=1
+        bar.BackgroundTransparency=1
+
+        task.wait(.2)
+        Tween(frame,{BackgroundTransparency=0},.6,Enum.EasingStyle.Quint)
+        task.wait(.2)
+        if iconObj then Tween(iconObj,{ImageTransparency=0},.5) end
+        if titleObj then Tween(titleObj,{TextTransparency=0},.5) end
+        Tween(loadingText,{TextTransparency=0},.5)
+        Tween(barBG,{BackgroundTransparency=0},.5)
+        Tween(bar,{BackgroundTransparency=0},.5)
+
+        task.wait(.6)
+        Tween(bar,{Size=UDim2.new(1,0,1,0)},2.2,Enum.EasingStyle.Linear)
+        task.wait(2.3)
+
+        if iconObj then Tween(iconObj,{ImageTransparency=1},.4) end
+        if titleObj then Tween(titleObj,{TextTransparency=1},.4) end
+        Tween(loadingText,{TextTransparency=1},.4)
+        Tween(barBG,{BackgroundTransparency=1},.4)
+        Tween(bar,{BackgroundTransparency=1},.4)
+        task.wait(.4)
+        Tween(frame,{BackgroundTransparency=1},.5,Enum.EasingStyle.Quint,Enum.EasingDirection.In)
+        task.wait(.6)
+        gui:Destroy()
     else
-        local backgroundOverlay = CreateInstance("Frame", {
-            Name = "BackgroundOverlay",
-            Size = UDim2.new(1, 0, 0, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-            BorderSizePixel = 0,
-            ZIndex = 0,
-            Parent = screenGui
-        })
-        
-        mainFrame.BackgroundTransparency = 1
-        if iconLabel then iconLabel.ImageTransparency = 1 end
-        if titleLabel then titleLabel.TextTransparency = 1 end
-        loadingText.TextTransparency = 1
-        loadingBarBackground.BackgroundTransparency = 1
-        loadingBar.BackgroundTransparency = 1
-        
-        task.spawn(function()
-            task.wait(0.1)
-            
-            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            task.wait(0.3)
-            
-            Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            Tween(loadingText, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(loadingBarBackground, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(loadingBar, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            task.wait(0.4)
-            
-            local loadingDuration = 2.5
-            Tween(loadingBar, {Size = UDim2.new(1, 0, 1, 0)}, loadingDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-            
-            task.wait(loadingDuration)
-            task.wait(0.3)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            end
-            Tween(loadingText, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            Tween(loadingBarBackground, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            Tween(loadingBar, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            
-            task.wait(0.4)
-            
-            Tween(mainFrame, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 0, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-            
-            task.wait(0.6)
-            screenGui:Destroy()
-        end)
+        local overlay = Create("Frame",{Parent=gui,Size=UDim2.new(1,0,0,0),BackgroundColor3=Color3.fromRGB(15,15,15),BorderSizePixel=0})
+        frame.BackgroundTransparency=1
+        if iconObj then iconObj.ImageTransparency=1 end
+        if titleObj then titleObj.TextTransparency=1 end
+        loadingText.TextTransparency=1
+        barBG.BackgroundTransparency=1
+        bar.BackgroundTransparency=1
+
+        Tween(overlay,{Size=UDim2.new(1,0,1,0)},.5)
+        task.wait(.3)
+        Tween(frame,{BackgroundTransparency=0},.4)
+        if iconObj then Tween(iconObj,{ImageTransparency=0},.4) end
+        if titleObj then Tween(titleObj,{TextTransparency=0},.4) end
+        Tween(loadingText,{TextTransparency=0},.4)
+        Tween(barBG,{BackgroundTransparency=0},.4)
+        Tween(bar,{BackgroundTransparency=0},.4)
+
+        task.wait(.5)
+        Tween(bar,{Size=UDim2.new(1,0,1,0)},2.2,Enum.EasingStyle.Linear)
+        task.wait(2.3)
+
+        if iconObj then Tween(iconObj,{ImageTransparency=1},.3) end
+        if titleObj then Tween(titleObj,{TextTransparency=1},.3) end
+        Tween(loadingText,{TextTransparency=1},.3)
+        Tween(barBG,{BackgroundTransparency=1},.3)
+        Tween(bar,{BackgroundTransparency=1},.3)
+        Tween(frame,{BackgroundTransparency=1},.4)
+        Tween(overlay,{Size=UDim2.new(1,0,0,0)},.5,Enum.EasingDirection.In)
+        task.wait(.6)
+        gui:Destroy()
     end
 end
 
-function Catlib:CreateKeySystem(config)
-    config = config or {}
-    local mode = config.Mode or "modern"
-    local icon = config.Icon
-    local title = config.Title
-    local borderColor = config.BorderColor or Color3.fromRGB(255, 255, 255)
-    local textColor = config.TextColor or Color3.fromRGB(255, 255, 255)
-    local correctKey = config.Key or ""
-    local getKeyUrl = config.GetKeyUrl or ""
-    local onSuccess = config.OnSuccess or function() end
-    
-    local screenGui = CreateInstance("ScreenGui", {
-        Name = "CatlibKeySystem",
-        Parent = CoreGui,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        ResetOnSpawn = false,
-        IgnoreGuiInset = true
-    })
-    
-    local mainFrame = CreateInstance("Frame", {
-        Name = "MainFrame",
-        Size = UDim2.new(0, 540, 0, 460),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
-        BorderSizePixel = 0,
-        Parent = screenGui
-    })
-    
-    local iconLabel
+function Catlib:KeySystem(config)
+    config=config or {}
+    local mode=config.Mode or "Modern"
+    local icon=config.Icon
+    local title=config.Title
+    local borderColor=config.BorderColor or Color3.fromRGB(255,255,255)
+    local textColor=config.TextColor or Color3.fromRGB(255,255,255)
+    local key=config.Key or ""
+    local onSuccess=config.OnSuccess or function()end
+
+    local gui=Create("ScreenGui",{Name="CatlibKey",Parent=CoreGui,IgnoreGuiInset=true,ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
+
+    local frame=Create("Frame",{Parent=gui,Size=UDim2.fromOffset(680,420),Position=UDim2.fromScale(.5,.5),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),BorderSizePixel=0})
+    Create("UICorner",{Parent=frame,CornerRadius=UDim.new(0,8)})
+
+    local iconObj
     if icon then
-        iconLabel = CreateInstance("ImageLabel", {
-            Name = "Icon",
-            Size = UDim2.new(0, 80, 0, 80),
-            Position = UDim2.new(0.5, 0, 0.2, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Image = icon,
-            Parent = mainFrame
-        })
+        iconObj=Create("ImageLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(90,90),Position=UDim2.fromScale(.5,.23),AnchorPoint=Vector2.new(.5,.5),Image=icon})
     end
-    
-    local titleLabel
+
+    local titleObj
     if title then
-        titleLabel = CreateInstance("TextLabel", {
-            Name = "Title",
-            Size = UDim2.new(1, 0, 0, 40),
-            Position = UDim2.new(0.5, 0, 0.38, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Text = title,
-            TextColor3 = textColor,
-            TextSize = 28,
-            Font = Enum.Font.GothamBold,
-            Parent = mainFrame
-        })
+        titleObj=Create("TextLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(500,45),Position=UDim2.fromScale(.5,.4),AnchorPoint=Vector2.new(.5,.5),Text=title,Font=Enum.Font.GothamBold,TextSize=30,TextColor3=textColor})
     end
-    
-    local inputKeyLabel = CreateInstance("TextLabel", {
-        Name = "InputKeyLabel",
-        Size = UDim2.new(0, 520, 0, 25),
-        Position = UDim2.new(0.5, 0, 0.54, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        Text = "Input Key",
-        TextColor3 = textColor,
-        TextSize = 16,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        Parent = mainFrame
-    })
-    
-    local inputBorder = CreateInstance("Frame", {
-        Name = "InputBorder",
-        Size = UDim2.new(0, 520, 0, 1),
-        Position = UDim2.new(0.5, 0, 0.59, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = borderColor,
-        BorderSizePixel = 0,
-        Parent = mainFrame
-    })
-    
-    local keyInput = CreateInstance("TextBox", {
-        Name = "KeyInput",
-        Size = UDim2.new(0, 520, 0, 30),
-        Position = UDim2.new(0.5, 0, 0.61, 0),
-        AnchorPoint = Vector2.new(0.5, 0),
-        BackgroundTransparency = 1,
-        Text = "",
-        PlaceholderText = "",
-        TextColor3 = textColor,
-        TextSize = 14,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        ClearTextOnFocus = false,
-        Parent = mainFrame
-    })
-    
-    local buttonContainer = CreateInstance("Frame", {
-        Name = "ButtonContainer",
-        Size = UDim2.new(0, 390, 0, 50),
-        Position = UDim2.new(0.5, 0, 0.85, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        Parent = mainFrame
-    })
-    
-    local getKeyButton = CreateInstance("TextButton", {
-        Name = "GetKeyButton",
-        Size = UDim2.new(0, 170, 0, 48),
-        Position = UDim2.new(0, 0, 0, 0),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
-        BorderSizePixel = 0,
-        Text = "Get Key",
-        TextColor3 = textColor,
-        TextSize = 18,
-        Font = Enum.Font.GothamBold,
-        Parent = buttonContainer
-    })
-    
-    CreateInstance("UIStroke", {
-        Color = borderColor,
-        Thickness = 2,
-        Parent = getKeyButton
-    })
-    
-    local confirmButton = CreateInstance("TextButton", {
-        Name = "ConfirmButton",
-        Size = UDim2.new(0, 170, 0, 48),
-        Position = UDim2.new(1, 0, 0, 0),
-        AnchorPoint = Vector2.new(1, 0),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
-        BorderSizePixel = 0,
-        Text = "Confirm",
-        TextColor3 = textColor,
-        TextSize = 18,
-        Font = Enum.Font.GothamBold,
-        Parent = buttonContainer
-    })
-    
-    CreateInstance("UIStroke", {
-        Color = borderColor,
-        Thickness = 2,
-        Parent = confirmButton
-    })
-    
-    getKeyButton.MouseButton1Click:Connect(function()
-        if getKeyUrl ~= "" then
-            if setclipboard then
-                setclipboard(getKeyUrl)
-            end
-            if syn and syn.request then
-                syn.request({
-                    Url = getKeyUrl,
-                    Method = "GET"
-                })
-            end
-        end
-    end)
-    
-    confirmButton.MouseButton1Click:Connect(function()
-        local enteredKey = keyInput.Text
-        if enteredKey == correctKey then
-            if mode == "modern" then
-                if iconLabel then
-                    Tween(iconLabel, {ImageTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
-                if titleLabel then
-                    Tween(titleLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
-                Tween(inputKeyLabel, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(inputBorder, {BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(keyInput, {TextTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(getKeyButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(confirmButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                
-                task.wait(0.5)
-                
-                Tween(mainFrame, {BackgroundTransparency = 1}, 0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-                
-                task.wait(0.7)
-                screenGui:Destroy()
-                onSuccess()
-            else
-                local backgroundOverlay = screenGui:FindFirstChild("BackgroundOverlay")
-                
-                if iconLabel then
-                    Tween(iconLabel, {ImageTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
-                if titleLabel then
-                    Tween(titleLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
-                Tween(inputKeyLabel, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(inputBorder, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(keyInput, {TextTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(getKeyButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                Tween(confirmButton, {TextTransparency = 1, BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                
-                task.wait(0.4)
-                
-                Tween(mainFrame, {BackgroundTransparency = 1}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                
-                if backgroundOverlay then
-                    Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 0, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-                end
-                
-                task.wait(0.6)
-                screenGui:Destroy()
-                onSuccess()
-            end
+
+    local inputLabel=Create("TextLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(560,25),Position=UDim2.fromScale(.5,.55),AnchorPoint=Vector2.new(.5,.5),Text="Input Key",Font=Enum.Font.Gotham,TextSize=17,TextColor3=textColor,TextXAlignment=Enum.TextXAlignment.Left})
+
+    local line=Create("Frame",{Parent=frame,Size=UDim2.fromOffset(560,1),Position=UDim2.fromScale(.5,.585),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=borderColor,BorderSizePixel=0})
+
+    local box=Create("TextBox",{Parent=frame,Size=UDim2.fromOffset(560,35),Position=UDim2.fromScale(.5,.6),AnchorPoint=Vector2.new(.5,0),BackgroundTransparency=1,Text="",TextColor3=textColor,Font=Enum.Font.Gotham,TextSize=16,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false})
+
+    local getBtn=Create("TextButton",{Parent=frame,Size=UDim2.fromOffset(200,50),Position=UDim2.fromScale(.32,.85),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),Text="Get Key",Font=Enum.Font.GothamBold,TextSize=18,TextColor3=textColor,BorderSizePixel=0})
+    Create("UIStroke",{Parent=getBtn,Color=borderColor,Thickness=2})
+
+    local confirmBtn=Create("TextButton",{Parent=frame,Size=UDim2.fromOffset(200,50),Position=UDim2.fromScale(.68,.85),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),Text="Confirm",Font=Enum.Font.GothamBold,TextSize=18,TextColor3=textColor,BorderSizePixel=0})
+    Create("UIStroke",{Parent=confirmBtn,Color=borderColor,Thickness=2})
+
+    confirmBtn.MouseButton1Click:Connect(function()
+        if box.Text==key then
+            Tween(frame,{BackgroundTransparency=1},.5)
+            task.wait(.5)
+            gui:Destroy()
+            onSuccess()
         else
-            keyInput.Text = ""
-            keyInput.PlaceholderText = "Invalid Key"
-            task.wait(1.5)
-            keyInput.PlaceholderText = ""
+            box.Text=""
+            box.PlaceholderText="Invalid Key"
+            task.wait(1)
+            box.PlaceholderText=""
         end
     end)
-    
-    if mode == "modern" then
-        mainFrame.BackgroundTransparency = 1
-        if iconLabel then iconLabel.ImageTransparency = 1 end
-        if titleLabel then titleLabel.TextTransparency = 1 end
-        inputKeyLabel.TextTransparency = 1
-        inputBorder.BackgroundTransparency = 1
-        keyInput.TextTransparency = 1
-        getKeyButton.BackgroundTransparency = 1
-        getKeyButton.TextTransparency = 1
-        confirmButton.BackgroundTransparency = 1
-        confirmButton.TextTransparency = 1
-        
-        task.spawn(function()
-            task.wait(0.1)
-            
-            Tween(mainFrame, {BackgroundTransparency = 0}, 0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-            
-            task.wait(0.3)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            Tween(inputKeyLabel, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(inputBorder, {BackgroundTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(keyInput, {TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(getKeyButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(confirmButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        end)
-        
+
+    if mode=="Modern" then
+        frame.BackgroundTransparency=1
+        if iconObj then iconObj.ImageTransparency=1 end
+        if titleObj then titleObj.TextTransparency=1 end
+        inputLabel.TextTransparency=1
+        line.BackgroundTransparency=1
+        box.TextTransparency=1
+        getBtn.TextTransparency=1 getBtn.BackgroundTransparency=1
+        confirmBtn.TextTransparency=1 confirmBtn.BackgroundTransparency=1
+
+        task.wait(.2)
+        Tween(frame,{BackgroundTransparency=0},.6,Enum.EasingStyle.Quint)
+        task.wait(.2)
+        if iconObj then Tween(iconObj,{ImageTransparency=0},.5) end
+        if titleObj then Tween(titleObj,{TextTransparency=0},.5) end
+        Tween(inputLabel,{TextTransparency=0},.5)
+        Tween(line,{BackgroundTransparency=0},.5)
+        Tween(box,{TextTransparency=0},.5)
+        Tween(getBtn,{TextTransparency=0,BackgroundTransparency=0},.5)
+        Tween(confirmBtn,{TextTransparency=0,BackgroundTransparency=0},.5)
     else
-        local backgroundOverlay = CreateInstance("Frame", {
-            Name = "BackgroundOverlay",
-            Size = UDim2.new(1, 0, 0, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-            BorderSizePixel = 0,
-            ZIndex = 0,
-            Parent = screenGui
-        })
-        
-        mainFrame.BackgroundTransparency = 1
-        if iconLabel then iconLabel.ImageTransparency = 1 end
-        if titleLabel then titleLabel.TextTransparency = 1 end
-        inputKeyLabel.TextTransparency = 1
-        inputBorder.BackgroundTransparency = 1
-        keyInput.TextTransparency = 1
-        getKeyButton.BackgroundTransparency = 1
-        getKeyButton.TextTransparency = 1
-        confirmButton.BackgroundTransparency = 1
-        confirmButton.TextTransparency = 1
-        
-        task.spawn(function()
-            task.wait(0.1)
-            
-            Tween(backgroundOverlay, {Size = UDim2.new(1, 0, 1, 0)}, 0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            task.wait(0.3)
-            
-            Tween(mainFrame, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            
-            if iconLabel then
-                Tween(iconLabel, {ImageTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            if titleLabel then
-                Tween(titleLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            end
-            Tween(inputKeyLabel, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(inputBorder, {BackgroundTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(keyInput, {TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(getKeyButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            Tween(confirmButton, {BackgroundTransparency = 0, TextTransparency = 0}, 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        end)
+        local overlay=Create("Frame",{Parent=gui,Size=UDim2.new(1,0,0,0),BackgroundColor3=Color3.fromRGB(15,15,15),BorderSizePixel=0})
+        frame.BackgroundTransparency=1
+        Tween(overlay,{Size=UDim2.new(1,0,1,0)},.5)
+        task.wait(.3)
+        Tween(frame,{BackgroundTransparency=0},.4)
     end
 end
 
