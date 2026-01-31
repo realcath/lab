@@ -1,244 +1,419 @@
+local Catlib = {}
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 
-local Catlib = {}
-Catlib.__index = Catlib
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local function Create(class, props)
-    local inst = Instance.new(class)
-    for i,v in pairs(props) do
-        if i ~= "Parent" then
-            inst[i] = v
-        end
-    end
-    inst.Parent = props.Parent
-    return inst
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CatlibUI"
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+if gethui then
+    ScreenGui.Parent = gethui()
+elseif syn and syn.protect_gui then
+    syn.protect_gui(ScreenGui)
+    ScreenGui.Parent = CoreGui
+else
+    ScreenGui.Parent = CoreGui
 end
 
-local function Tween(obj,props,time,style,dir)
-    local t = TweenService:Create(obj,TweenInfo.new(time or .4,style or Enum.EasingStyle.Quad,dir or Enum.EasingDirection.Out),props)
-    t:Play()
-    return t
+local function CreateTween(instance, duration, properties, easingStyle, easingDirection)
+    easingStyle = easingStyle or Enum.EasingStyle.Quad
+    easingDirection = easingDirection or Enum.EasingDirection.Out
+    local tween = TweenService:Create(instance, TweenInfo.new(duration, easingStyle, easingDirection), properties)
+    return tween
 end
 
-function Catlib:Loading(config)
+function Catlib:CreateLoadingScreen(config)
     config = config or {}
-    local mode = config.Mode or "Modern"
-    local icon = config.Icon
-    local title = config.Title
-    local barColor = config.LoadingBarColor or Color3.fromRGB(255,255,255)
-    local textColor = config.TextColor or Color3.fromRGB(255,255,255)
-
-    local gui = Create("ScreenGui",{Name="CatlibLoading",Parent=CoreGui,IgnoreGuiInset=true,ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
-
-    local frame = Create("Frame",{
-        Parent=gui,
-        Size=UDim2.fromOffset(620,340),
-        Position=UDim2.fromScale(.5,.5),
-        AnchorPoint=Vector2.new(.5,.5),
-        BackgroundColor3=Color3.fromRGB(22,22,22),
-        BorderSizePixel=0
-    })
-
-    Create("UICorner",{Parent=frame,CornerRadius=UDim.new(0,8)})
-
-    local iconObj
-    if icon then
-        iconObj = Create("ImageLabel",{
-            Parent=frame,
-            BackgroundTransparency=1,
-            Size=UDim2.fromOffset(90,90),
-            Position=UDim2.fromScale(.5,.32),
-            AnchorPoint=Vector2.new(.5,.5),
-            Image=icon
-        })
-    end
-
-    local titleObj
-    if title then
-        titleObj = Create("TextLabel",{
-            Parent=frame,
-            BackgroundTransparency=1,
-            Size=UDim2.fromOffset(500,40),
-            Position=UDim2.fromScale(.5,.52),
-            AnchorPoint=Vector2.new(.5,.5),
-            Text=title,
-            Font=Enum.Font.GothamBold,
-            TextSize=28,
-            TextColor3=textColor
-        })
-    end
-
-    local loadingText = Create("TextLabel",{
-        Parent=frame,
-        BackgroundTransparency=1,
-        Size=UDim2.fromOffset(400,30),
-        Position=UDim2.fromScale(.5,.66),
-        AnchorPoint=Vector2.new(.5,.5),
-        Text="Loading...",
-        Font=Enum.Font.Gotham,
-        TextSize=18,
-        TextColor3=textColor
-    })
-
-    local barBG = Create("Frame",{
-        Parent=frame,
-        Size=UDim2.fromOffset(520,4),
-        Position=UDim2.fromScale(.5,.85),
-        AnchorPoint=Vector2.new(.5,.5),
-        BackgroundColor3=Color3.fromRGB(45,45,45),
-        BorderSizePixel=0
-    })
-
-    local bar = Create("Frame",{
-        Parent=barBG,
-        Size=UDim2.new(0,0,1,0),
-        BackgroundColor3=barColor,
-        BorderSizePixel=0
-    })
-
-    if mode=="Modern" then
-        frame.BackgroundTransparency=1
-        if iconObj then iconObj.ImageTransparency=1 end
-        if titleObj then titleObj.TextTransparency=1 end
-        loadingText.TextTransparency=1
-        barBG.BackgroundTransparency=1
-        bar.BackgroundTransparency=1
-
-        task.wait(.2)
-        Tween(frame,{BackgroundTransparency=0},.6,Enum.EasingStyle.Quint)
-        task.wait(.2)
-        if iconObj then Tween(iconObj,{ImageTransparency=0},.5) end
-        if titleObj then Tween(titleObj,{TextTransparency=0},.5) end
-        Tween(loadingText,{TextTransparency=0},.5)
-        Tween(barBG,{BackgroundTransparency=0},.5)
-        Tween(bar,{BackgroundTransparency=0},.5)
-
-        task.wait(.6)
-        Tween(bar,{Size=UDim2.new(1,0,1,0)},2.2,Enum.EasingStyle.Linear)
-        task.wait(2.3)
-
-        if iconObj then Tween(iconObj,{ImageTransparency=1},.4) end
-        if titleObj then Tween(titleObj,{TextTransparency=1},.4) end
-        Tween(loadingText,{TextTransparency=1},.4)
-        Tween(barBG,{BackgroundTransparency=1},.4)
-        Tween(bar,{BackgroundTransparency=1},.4)
-        task.wait(.4)
-        Tween(frame,{BackgroundTransparency=1},.5,Enum.EasingStyle.Quint,Enum.EasingDirection.In)
-        task.wait(.6)
-        gui:Destroy()
+    local mode = config.Mode or "modern"
+    local icon = config.Icon or ""
+    local title = config.Title or ""
+    local loadingBarColor = config.LoadingBarColor or Color3.fromRGB(255, 255, 255)
+    local textColor = config.TextColor or Color3.fromRGB(255, 255, 255)
+    
+    local LoadingFrame = Instance.new("Frame")
+    LoadingFrame.Name = "LoadingScreen"
+    LoadingFrame.Size = UDim2.new(0, 540, 0, 540)
+    LoadingFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    LoadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadingFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    LoadingFrame.BorderSizePixel = 0
+    LoadingFrame.Parent = ScreenGui
+    
+    if mode == "modern" then
+        LoadingFrame.BackgroundTransparency = 1
+        
+        local particles = {}
+        for i = 1, 50 do
+            local particle = Instance.new("Frame")
+            particle.Size = UDim2.new(0, math.random(20, 60), 0, math.random(20, 60))
+            particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            particle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            particle.BackgroundTransparency = 1
+            particle.BorderSizePixel = 0
+            particle.Parent = LoadingFrame
+            table.insert(particles, particle)
+        end
+        
+        for i, particle in ipairs(particles) do
+            task.wait(0.01)
+            CreateTween(particle, 0.8, {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        end
+        
+        task.wait(0.8)
+        CreateTween(LoadingFrame, 0.3, {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.3)
+        
+        for _, particle in ipairs(particles) do
+            particle:Destroy()
+        end
     else
-        local overlay = Create("Frame",{Parent=gui,Size=UDim2.new(1,0,0,0),BackgroundColor3=Color3.fromRGB(15,15,15),BorderSizePixel=0})
-        frame.BackgroundTransparency=1
-        if iconObj then iconObj.ImageTransparency=1 end
-        if titleObj then titleObj.TextTransparency=1 end
-        loadingText.TextTransparency=1
-        barBG.BackgroundTransparency=1
-        bar.BackgroundTransparency=1
-
-        Tween(overlay,{Size=UDim2.new(1,0,1,0)},.5)
-        task.wait(.3)
-        Tween(frame,{BackgroundTransparency=0},.4)
-        if iconObj then Tween(iconObj,{ImageTransparency=0},.4) end
-        if titleObj then Tween(titleObj,{TextTransparency=0},.4) end
-        Tween(loadingText,{TextTransparency=0},.4)
-        Tween(barBG,{BackgroundTransparency=0},.4)
-        Tween(bar,{BackgroundTransparency=0},.4)
-
-        task.wait(.5)
-        Tween(bar,{Size=UDim2.new(1,0,1,0)},2.2,Enum.EasingStyle.Linear)
-        task.wait(2.3)
-
-        if iconObj then Tween(iconObj,{ImageTransparency=1},.3) end
-        if titleObj then Tween(titleObj,{TextTransparency=1},.3) end
-        Tween(loadingText,{TextTransparency=1},.3)
-        Tween(barBG,{BackgroundTransparency=1},.3)
-        Tween(bar,{BackgroundTransparency=1},.3)
-        Tween(frame,{BackgroundTransparency=1},.4)
-        Tween(overlay,{Size=UDim2.new(1,0,0,0)},.5,Enum.EasingDirection.In)
-        task.wait(.6)
-        gui:Destroy()
+        LoadingFrame.BackgroundTransparency = 1
+        
+        local Background = Instance.new("Frame")
+        Background.Size = UDim2.new(1, 0, 0, 0)
+        Background.Position = UDim2.new(0, 0, 0, 0)
+        Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Background.BorderSizePixel = 0
+        Background.Parent = LoadingFrame
+        
+        CreateTween(Background, 0.5, {Size = UDim2.new(1, 0, 1, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.5)
+        LoadingFrame.BackgroundTransparency = 0
+        Background:Destroy()
     end
-end
-
-function Catlib:KeySystem(config)
-    config=config or {}
-    local mode=config.Mode or "Modern"
-    local icon=config.Icon
-    local title=config.Title
-    local borderColor=config.BorderColor or Color3.fromRGB(255,255,255)
-    local textColor=config.TextColor or Color3.fromRGB(255,255,255)
-    local key=config.Key or ""
-    local onSuccess=config.OnSuccess or function()end
-
-    local gui=Create("ScreenGui",{Name="CatlibKey",Parent=CoreGui,IgnoreGuiInset=true,ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
-
-    local frame=Create("Frame",{Parent=gui,Size=UDim2.fromOffset(680,420),Position=UDim2.fromScale(.5,.5),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),BorderSizePixel=0})
-    Create("UICorner",{Parent=frame,CornerRadius=UDim.new(0,8)})
-
-    local iconObj
-    if icon then
-        iconObj=Create("ImageLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(90,90),Position=UDim2.fromScale(.5,.23),AnchorPoint=Vector2.new(.5,.5),Image=icon})
+    
+    if icon ~= "" then
+        local IconLabel = Instance.new("ImageLabel")
+        IconLabel.Name = "Icon"
+        IconLabel.Size = UDim2.new(0, 100, 0, 100)
+        IconLabel.Position = UDim2.new(0.5, 0, 0.35, 0)
+        IconLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        IconLabel.BackgroundTransparency = 1
+        IconLabel.Image = icon
+        IconLabel.Parent = LoadingFrame
     end
-
-    local titleObj
-    if title then
-        titleObj=Create("TextLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(500,45),Position=UDim2.fromScale(.5,.4),AnchorPoint=Vector2.new(.5,.5),Text=title,Font=Enum.Font.GothamBold,TextSize=30,TextColor3=textColor})
+    
+    if title ~= "" then
+        local TitleLabel = Instance.new("TextLabel")
+        TitleLabel.Name = "Title"
+        TitleLabel.Size = UDim2.new(0.8, 0, 0, 40)
+        TitleLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+        TitleLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        TitleLabel.BackgroundTransparency = 1
+        TitleLabel.Text = title
+        TitleLabel.TextColor3 = textColor
+        TitleLabel.Font = Enum.Font.GothamBold
+        TitleLabel.TextSize = 32
+        TitleLabel.Parent = LoadingFrame
     end
-
-    local inputLabel=Create("TextLabel",{Parent=frame,BackgroundTransparency=1,Size=UDim2.fromOffset(560,25),Position=UDim2.fromScale(.5,.55),AnchorPoint=Vector2.new(.5,.5),Text="Input Key",Font=Enum.Font.Gotham,TextSize=17,TextColor3=textColor,TextXAlignment=Enum.TextXAlignment.Left})
-
-    local line=Create("Frame",{Parent=frame,Size=UDim2.fromOffset(560,1),Position=UDim2.fromScale(.5,.585),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=borderColor,BorderSizePixel=0})
-
-    local box=Create("TextBox",{Parent=frame,Size=UDim2.fromOffset(560,35),Position=UDim2.fromScale(.5,.6),AnchorPoint=Vector2.new(.5,0),BackgroundTransparency=1,Text="",TextColor3=textColor,Font=Enum.Font.Gotham,TextSize=16,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false})
-
-    local getBtn=Create("TextButton",{Parent=frame,Size=UDim2.fromOffset(200,50),Position=UDim2.fromScale(.32,.85),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),Text="Get Key",Font=Enum.Font.GothamBold,TextSize=18,TextColor3=textColor,BorderSizePixel=0})
-    Create("UIStroke",{Parent=getBtn,Color=borderColor,Thickness=2})
-
-    local confirmBtn=Create("TextButton",{Parent=frame,Size=UDim2.fromOffset(200,50),Position=UDim2.fromScale(.68,.85),AnchorPoint=Vector2.new(.5,.5),BackgroundColor3=Color3.fromRGB(22,22,22),Text="Confirm",Font=Enum.Font.GothamBold,TextSize=18,TextColor3=textColor,BorderSizePixel=0})
-    Create("UIStroke",{Parent=confirmBtn,Color=borderColor,Thickness=2})
-
-    confirmBtn.MouseButton1Click:Connect(function()
-        if box.Text==key then
-            Tween(frame,{BackgroundTransparency=1},.5)
-            task.wait(.5)
-            gui:Destroy()
-            onSuccess()
-        else
-            box.Text=""
-            box.PlaceholderText="Invalid Key"
-            task.wait(1)
-            box.PlaceholderText=""
+    
+    local LoadingText = Instance.new("TextLabel")
+    LoadingText.Name = "LoadingText"
+    LoadingText.Size = UDim2.new(0.8, 0, 0, 30)
+    LoadingText.Position = UDim2.new(0.5, 0, 0.6, 0)
+    LoadingText.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadingText.BackgroundTransparency = 1
+    LoadingText.Text = "Loading..."
+    LoadingText.TextColor3 = textColor
+    LoadingText.Font = Enum.Font.Gotham
+    LoadingText.TextSize = 18
+    LoadingText.Parent = LoadingFrame
+    
+    local BarBackground = Instance.new("Frame")
+    BarBackground.Name = "BarBackground"
+    BarBackground.Size = UDim2.new(0.7, 0, 0, 6)
+    BarBackground.Position = UDim2.new(0.5, 0, 0.68, 0)
+    BarBackground.AnchorPoint = Vector2.new(0.5, 0.5)
+    BarBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    BarBackground.BorderSizePixel = 0
+    BarBackground.Parent = LoadingFrame
+    
+    local LoadingBar = Instance.new("Frame")
+    LoadingBar.Name = "LoadingBar"
+    LoadingBar.Size = UDim2.new(0, 0, 1, 0)
+    LoadingBar.BackgroundColor3 = loadingBarColor
+    LoadingBar.BorderSizePixel = 0
+    LoadingBar.Parent = BarBackground
+    
+    local progress = 0
+    local loading = true
+    
+    task.spawn(function()
+        while loading do
+            task.wait(0.03)
+            if progress < 1 then
+                progress = progress + math.random(1, 3) / 100
+                if progress > 1 then progress = 1 end
+                CreateTween(LoadingBar, 0.2, {Size = UDim2.new(progress, 0, 1, 0)}, Enum.EasingStyle.Linear):Play()
+            end
         end
     end)
-
-    if mode=="Modern" then
-        frame.BackgroundTransparency=1
-        if iconObj then iconObj.ImageTransparency=1 end
-        if titleObj then titleObj.TextTransparency=1 end
-        inputLabel.TextTransparency=1
-        line.BackgroundTransparency=1
-        box.TextTransparency=1
-        getBtn.TextTransparency=1 getBtn.BackgroundTransparency=1
-        confirmBtn.TextTransparency=1 confirmBtn.BackgroundTransparency=1
-
-        task.wait(.2)
-        Tween(frame,{BackgroundTransparency=0},.6,Enum.EasingStyle.Quint)
-        task.wait(.2)
-        if iconObj then Tween(iconObj,{ImageTransparency=0},.5) end
-        if titleObj then Tween(titleObj,{TextTransparency=0},.5) end
-        Tween(inputLabel,{TextTransparency=0},.5)
-        Tween(line,{BackgroundTransparency=0},.5)
-        Tween(box,{TextTransparency=0},.5)
-        Tween(getBtn,{TextTransparency=0,BackgroundTransparency=0},.5)
-        Tween(confirmBtn,{TextTransparency=0,BackgroundTransparency=0},.5)
+    
+    task.wait(2)
+    progress = 1
+    CreateTween(LoadingBar, 0.3, {Size = UDim2.new(1, 0, 1, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+    task.wait(0.5)
+    loading = false
+    
+    if mode == "modern" then
+        local particles = {}
+        for i = 1, 50 do
+            local particle = Instance.new("Frame")
+            particle.Size = UDim2.new(0, math.random(20, 60), 0, math.random(20, 60))
+            particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            particle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            particle.BackgroundTransparency = 0
+            particle.BorderSizePixel = 0
+            particle.Parent = LoadingFrame
+            table.insert(particles, particle)
+        end
+        
+        CreateTween(LoadingFrame, 0.3, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        
+        for i, particle in ipairs(particles) do
+            task.spawn(function()
+                task.wait(i * 0.01)
+                CreateTween(particle, 0.8, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+            end)
+        end
+        
+        task.wait(1)
     else
-        local overlay=Create("Frame",{Parent=gui,Size=UDim2.new(1,0,0,0),BackgroundColor3=Color3.fromRGB(15,15,15),BorderSizePixel=0})
-        frame.BackgroundTransparency=1
-        Tween(overlay,{Size=UDim2.new(1,0,1,0)},.5)
-        task.wait(.3)
-        Tween(frame,{BackgroundTransparency=0},.4)
+        local Background = Instance.new("Frame")
+        Background.Size = UDim2.new(1, 0, 1, 0)
+        Background.Position = UDim2.new(0, 0, 0, 0)
+        Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Background.BorderSizePixel = 0
+        Background.ZIndex = 10
+        Background.Parent = LoadingFrame
+        
+        CreateTween(Background, 0.5, {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        CreateTween(LoadingFrame, 0.5, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.5)
     end
+    
+    task.wait(3)
+    LoadingFrame:Destroy()
+end
+
+function Catlib:CreateKeySystem(config)
+    config = config or {}
+    local mode = config.Mode or "modern"
+    local icon = config.Icon or ""
+    local title = config.Title or "My Hub"
+    local borderColor = config.BorderColor or Color3.fromRGB(255, 255, 255)
+    local textColor = config.TextColor or Color3.fromRGB(255, 255, 255)
+    local getKeyCallback = config.GetKeyCallback or function() end
+    local confirmCallback = config.ConfirmCallback or function(key) return false end
+    
+    local KeyFrame = Instance.new("Frame")
+    KeyFrame.Name = "KeySystem"
+    KeyFrame.Size = UDim2.new(0, 540, 0, 540)
+    KeyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    KeyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    KeyFrame.BorderSizePixel = 0
+    KeyFrame.Parent = ScreenGui
+    
+    if mode == "modern" then
+        KeyFrame.BackgroundTransparency = 1
+        
+        local particles = {}
+        for i = 1, 50 do
+            local particle = Instance.new("Frame")
+            particle.Size = UDim2.new(0, math.random(20, 60), 0, math.random(20, 60))
+            particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            particle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            particle.BackgroundTransparency = 1
+            particle.BorderSizePixel = 0
+            particle.Parent = KeyFrame
+            table.insert(particles, particle)
+        end
+        
+        for i, particle in ipairs(particles) do
+            task.wait(0.01)
+            CreateTween(particle, 0.8, {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        end
+        
+        task.wait(0.8)
+        CreateTween(KeyFrame, 0.3, {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.3)
+        
+        for _, particle in ipairs(particles) do
+            particle:Destroy()
+        end
+    else
+        KeyFrame.BackgroundTransparency = 1
+        
+        local Background = Instance.new("Frame")
+        Background.Size = UDim2.new(1, 0, 0, 0)
+        Background.Position = UDim2.new(0, 0, 0, 0)
+        Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Background.BorderSizePixel = 0
+        Background.Parent = KeyFrame
+        
+        CreateTween(Background, 0.5, {Size = UDim2.new(1, 0, 1, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.5)
+        KeyFrame.BackgroundTransparency = 0
+        Background:Destroy()
+    end
+    
+    if icon ~= "" then
+        local IconLabel = Instance.new("ImageLabel")
+        IconLabel.Name = "Icon"
+        IconLabel.Size = UDim2.new(0, 100, 0, 100)
+        IconLabel.Position = UDim2.new(0.5, 0, 0.25, 0)
+        IconLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        IconLabel.BackgroundTransparency = 1
+        IconLabel.Image = icon
+        IconLabel.Parent = KeyFrame
+    end
+    
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Name = "Title"
+    TitleLabel.Size = UDim2.new(0.8, 0, 0, 40)
+    TitleLabel.Position = UDim2.new(0.5, 0, 0.4, 0)
+    TitleLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Text = title
+    TitleLabel.TextColor3 = textColor
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextSize = 32
+    TitleLabel.Parent = KeyFrame
+    
+    local InputContainer = Instance.new("Frame")
+    InputContainer.Name = "InputContainer"
+    InputContainer.Size = UDim2.new(0.7, 0, 0, 50)
+    InputContainer.Position = UDim2.new(0.5, 0, 0.52, 0)
+    InputContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    InputContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    InputContainer.BorderSizePixel = 0
+    InputContainer.Parent = KeyFrame
+    
+    local InputBorder = Instance.new("Frame")
+    InputBorder.Name = "Border"
+    InputBorder.Size = UDim2.new(1, 0, 0, 2)
+    InputBorder.Position = UDim2.new(0, 0, 1, 0)
+    InputBorder.BackgroundColor3 = borderColor
+    InputBorder.BorderSizePixel = 0
+    InputBorder.Parent = InputContainer
+    
+    local KeyInput = Instance.new("TextBox")
+    KeyInput.Name = "KeyInput"
+    KeyInput.Size = UDim2.new(1, -20, 1, 0)
+    KeyInput.Position = UDim2.new(0, 10, 0, 0)
+    KeyInput.BackgroundTransparency = 1
+    KeyInput.Text = ""
+    KeyInput.PlaceholderText = "Input Key"
+    KeyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    KeyInput.TextColor3 = textColor
+    KeyInput.Font = Enum.Font.Gotham
+    KeyInput.TextSize = 16
+    KeyInput.TextXAlignment = Enum.TextXAlignment.Left
+    KeyInput.ClearTextOnFocus = false
+    KeyInput.Parent = InputContainer
+    
+    local ButtonsContainer = Instance.new("Frame")
+    ButtonsContainer.Name = "ButtonsContainer"
+    ButtonsContainer.Size = UDim2.new(0.7, 0, 0, 60)
+    ButtonsContainer.Position = UDim2.new(0.5, 0, 0.68, 0)
+    ButtonsContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    ButtonsContainer.BackgroundTransparency = 1
+    ButtonsContainer.Parent = KeyFrame
+    
+    local GetKeyButton = Instance.new("TextButton")
+    GetKeyButton.Name = "GetKeyButton"
+    GetKeyButton.Size = UDim2.new(0.48, 0, 1, 0)
+    GetKeyButton.Position = UDim2.new(0, 0, 0, 0)
+    GetKeyButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    GetKeyButton.BorderColor3 = borderColor
+    GetKeyButton.BorderSizePixel = 2
+    GetKeyButton.Text = "Get Key"
+    GetKeyButton.TextColor3 = textColor
+    GetKeyButton.Font = Enum.Font.GothamBold
+    GetKeyButton.TextSize = 18
+    GetKeyButton.AutoButtonColor = false
+    GetKeyButton.Parent = ButtonsContainer
+    
+    local ConfirmButton = Instance.new("TextButton")
+    ConfirmButton.Name = "ConfirmButton"
+    ConfirmButton.Size = UDim2.new(0.48, 0, 1, 0)
+    ConfirmButton.Position = UDim2.new(0.52, 0, 0, 0)
+    ConfirmButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    ConfirmButton.BorderColor3 = borderColor
+    ConfirmButton.BorderSizePixel = 2
+    ConfirmButton.Text = "Confirm"
+    ConfirmButton.TextColor3 = textColor
+    ConfirmButton.Font = Enum.Font.GothamBold
+    ConfirmButton.TextSize = 18
+    ConfirmButton.AutoButtonColor = false
+    ConfirmButton.Parent = ButtonsContainer
+    
+    GetKeyButton.MouseButton1Click:Connect(function()
+        CreateTween(GetKeyButton, 0.1, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.1)
+        CreateTween(GetKeyButton, 0.1, {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        getKeyCallback()
+    end)
+    
+    ConfirmButton.MouseButton1Click:Connect(function()
+        CreateTween(ConfirmButton, 0.1, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        task.wait(0.1)
+        CreateTween(ConfirmButton, 0.1, {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+        
+        local key = KeyInput.Text
+        local success = confirmCallback(key)
+        
+        if success then
+            if mode == "modern" then
+                local particles = {}
+                for i = 1, 50 do
+                    local particle = Instance.new("Frame")
+                    particle.Size = UDim2.new(0, math.random(20, 60), 0, math.random(20, 60))
+                    particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+                    particle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                    particle.BackgroundTransparency = 0
+                    particle.BorderSizePixel = 0
+                    particle.Parent = KeyFrame
+                    table.insert(particles, particle)
+                end
+                
+                CreateTween(KeyFrame, 0.3, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+                
+                for i, particle in ipairs(particles) do
+                    task.spawn(function()
+                        task.wait(i * 0.01)
+                        CreateTween(particle, 0.8, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+                    end)
+                end
+                
+                task.wait(1)
+            else
+                local Background = Instance.new("Frame")
+                Background.Size = UDim2.new(1, 0, 1, 0)
+                Background.Position = UDim2.new(0, 0, 0, 0)
+                Background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+                Background.BorderSizePixel = 0
+                Background.ZIndex = 10
+                Background.Parent = KeyFrame
+                
+                CreateTween(Background, 0.5, {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+                CreateTween(KeyFrame, 0.5, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+                task.wait(0.5)
+            end
+            
+            KeyFrame:Destroy()
+        end
+    end)
+    
+    return KeyFrame
 end
 
 return Catlib
