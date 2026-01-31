@@ -45,7 +45,7 @@ function Catlib:CreateLoadingScreen(config)
     
     local mainFrame = CreateInstance("Frame", {
         Name = "MainFrame",
-        Size = UDim2.new(0, 650, 0, 370),
+        Size = UDim2.new(0, 540, 0, 320),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = Color3.fromRGB(25, 25, 25),
@@ -57,7 +57,7 @@ function Catlib:CreateLoadingScreen(config)
     if icon then
         iconLabel = CreateInstance("ImageLabel", {
             Name = "Icon",
-            Size = UDim2.new(0, 80, 0, 80),
+            Size = UDim2.new(0, 70, 0, 70),
             Position = UDim2.new(0.5, 0, 0.28, 0),
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
@@ -70,13 +70,13 @@ function Catlib:CreateLoadingScreen(config)
     if title then
         titleLabel = CreateInstance("TextLabel", {
             Name = "Title",
-            Size = UDim2.new(1, 0, 0, 45),
-            Position = UDim2.new(0.5, 0, 0.52, 0),
+            Size = UDim2.new(1, 0, 0, 35),
+            Position = UDim2.new(0.5, 0, 0.54, 0),
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
             Text = title,
             TextColor3 = textColor,
-            TextSize = 26,
+            TextSize = 24,
             Font = Enum.Font.GothamBold,
             Parent = mainFrame
         })
@@ -84,21 +84,21 @@ function Catlib:CreateLoadingScreen(config)
     
     local loadingText = CreateInstance("TextLabel", {
         Name = "LoadingText",
-        Size = UDim2.new(1, 0, 0, 30),
-        Position = UDim2.new(0.5, 0, 0.7, 0),
+        Size = UDim2.new(1, 0, 0, 25),
+        Position = UDim2.new(0.5, 0, 0.72, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundTransparency = 1,
         Text = "Loading...",
         TextColor3 = textColor,
-        TextSize = 18,
+        TextSize = 16,
         Font = Enum.Font.Gotham,
         Parent = mainFrame
     })
     
     local loadingBarBackground = CreateInstance("Frame", {
         Name = "LoadingBarBackground",
-        Size = UDim2.new(0, 550, 0, 4),
-        Position = UDim2.new(0.5, 0, 0.88, 0),
+        Size = UDim2.new(0, 470, 0, 3),
+        Position = UDim2.new(0.5, 0, 0.9, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = Color3.fromRGB(50, 50, 50),
         BorderSizePixel = 0,
@@ -251,10 +251,10 @@ function Catlib:CreateKeySystem(config)
     
     local mainFrame = CreateInstance("Frame", {
         Name = "MainFrame",
-        Size = UDim2.new(0, 540, 0, 460),
+        Size = UDim2.new(0, 540, 0, 440),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
         BorderSizePixel = 0,
         Parent = screenGui
     })
@@ -263,7 +263,7 @@ function Catlib:CreateKeySystem(config)
     if icon then
         iconLabel = CreateInstance("ImageLabel", {
             Name = "Icon",
-            Size = UDim2.new(0, 80, 0, 80),
+            Size = UDim2.new(0, 70, 0, 70),
             Position = UDim2.new(0.5, 0, 0.2, 0),
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
@@ -276,13 +276,13 @@ function Catlib:CreateKeySystem(config)
     if title then
         titleLabel = CreateInstance("TextLabel", {
             Name = "Title",
-            Size = UDim2.new(1, 0, 0, 40),
+            Size = UDim2.new(1, 0, 0, 35),
             Position = UDim2.new(0.5, 0, 0.38, 0),
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
             Text = title,
             TextColor3 = textColor,
-            TextSize = 28,
+            TextSize = 24,
             Font = Enum.Font.GothamBold,
             Parent = mainFrame
         })
@@ -290,21 +290,21 @@ function Catlib:CreateKeySystem(config)
     
     local inputKeyLabel = CreateInstance("TextLabel", {
         Name = "InputKeyLabel",
-        Size = UDim2.new(0, 520, 0, 25),
+        Size = UDim2.new(0, 420, 0, 25),
         Position = UDim2.new(0.5, 0, 0.54, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundTransparency = 1,
         Text = "Input Key",
         TextColor3 = textColor,
-        TextSize = 16,
+        TextSize = 15,
         Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
+        TextXAlignment = Enum.TextXAlignment.Left,
         Parent = mainFrame
     })
     
     local inputBorder = CreateInstance("Frame", {
         Name = "InputBorder",
-        Size = UDim2.new(0, 520, 0, 1),
+        Size = UDim2.new(0, 420, 0, 1),
         Position = UDim2.new(0.5, 0, 0.59, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = borderColor,
@@ -314,7 +314,7 @@ function Catlib:CreateKeySystem(config)
     
     local keyInput = CreateInstance("TextBox", {
         Name = "KeyInput",
-        Size = UDim2.new(0, 520, 0, 30),
+        Size = UDim2.new(0, 420, 0, 30),
         Position = UDim2.new(0.5, 0, 0.61, 0),
         AnchorPoint = Vector2.new(0.5, 0),
         BackgroundTransparency = 1,
@@ -323,14 +323,14 @@ function Catlib:CreateKeySystem(config)
         TextColor3 = textColor,
         TextSize = 14,
         Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
+        TextXAlignment = Enum.TextXAlignment.Left,
         ClearTextOnFocus = false,
         Parent = mainFrame
     })
     
     local buttonContainer = CreateInstance("Frame", {
         Name = "ButtonContainer",
-        Size = UDim2.new(0, 390, 0, 50),
+        Size = UDim2.new(0, 380, 0, 50),
         Position = UDim2.new(0.5, 0, 0.85, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundTransparency = 1,
@@ -341,11 +341,11 @@ function Catlib:CreateKeySystem(config)
         Name = "GetKeyButton",
         Size = UDim2.new(0, 170, 0, 48),
         Position = UDim2.new(0, 0, 0, 0),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
         BorderSizePixel = 0,
         Text = "Get Key",
         TextColor3 = textColor,
-        TextSize = 18,
+        TextSize = 17,
         Font = Enum.Font.GothamBold,
         Parent = buttonContainer
     })
@@ -361,11 +361,11 @@ function Catlib:CreateKeySystem(config)
         Size = UDim2.new(0, 170, 0, 48),
         Position = UDim2.new(1, 0, 0, 0),
         AnchorPoint = Vector2.new(1, 0),
-        BackgroundColor3 = Color3.fromRGB(28, 28, 28),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
         BorderSizePixel = 0,
         Text = "Confirm",
         TextColor3 = textColor,
-        TextSize = 18,
+        TextSize = 17,
         Font = Enum.Font.GothamBold,
         Parent = buttonContainer
     })
