@@ -143,20 +143,6 @@ function CatLib:CreateWindow(config)
     maxCorner.CornerRadius = UDim.new(0, 8)
     maxCorner.Parent = maximizeButton
     
-    local configButton = Instance.new("ImageButton")
-    configButton.Name = "ConfigButton"
-    configButton.Size = UDim2.new(0, 32, 0, 32)
-    configButton.Position = UDim2.new(1, -164, 0, 9)
-    configButton.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-    configButton.BorderSizePixel = 0
-    configButton.Image = "rbxassetid://96457830014743"
-    configButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    configButton.Parent = header
-    
-    local configCorner = Instance.new("UICorner")
-    configCorner.CornerRadius = UDim.new(0, 8)
-    configCorner.Parent = configButton
-    
     local minimizeButton = Instance.new("ImageButton")
     minimizeButton.Name = "MinimizeButton"
     minimizeButton.Size = UDim2.new(0, 32, 0, 32)
@@ -170,6 +156,20 @@ function CatLib:CreateWindow(config)
     local minCorner = Instance.new("UICorner")
     minCorner.CornerRadius = UDim.new(0, 8)
     minCorner.Parent = minimizeButton
+    
+    local configButton = Instance.new("ImageButton")
+    configButton.Name = "ConfigButton"
+    configButton.Size = UDim2.new(0, 32, 0, 32)
+    configButton.Position = UDim2.new(1, -164, 0, 9)
+    configButton.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+    configButton.BorderSizePixel = 0
+    configButton.Image = "rbxassetid://96457830014743"
+    configButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    configButton.Parent = header
+    
+    local configCorner = Instance.new("UICorner")
+    configCorner.CornerRadius = UDim.new(0, 8)
+    configCorner.Parent = configButton
     
     local headerSeparator = Instance.new("Frame")
     headerSeparator.Name = "Separator"
@@ -281,10 +281,21 @@ function CatLib:CreateWindow(config)
     verticalSeparator.BorderSizePixel = 0
     verticalSeparator.Parent = contentFrame
     
+    local blurEffect = Instance.new("Frame")
+    blurEffect.Name = "BlurEffect"
+    blurEffect.Size = UDim2.new(1, 0, 1, 0)
+    blurEffect.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    blurEffect.BackgroundTransparency = 0.7
+    blurEffect.BorderSizePixel = 0
+    blurEffect.Visible = false
+    blurEffect.ZIndex = 4
+    blurEffect.Parent = contentFrame
+    
     local configMenu = Instance.new("Frame")
     configMenu.Name = "ConfigMenu"
     configMenu.Size = UDim2.new(0, 0, 1, 0)
-    configMenu.Position = UDim2.new(0, 0, 0, 0)
+    configMenu.Position = UDim2.new(1, 0, 0, 0)
+    configMenu.AnchorPoint = Vector2.new(1, 0)
     configMenu.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     configMenu.BorderSizePixel = 0
     configMenu.Visible = false
@@ -309,16 +320,6 @@ function CatLib:CreateWindow(config)
     local closeConfigCorner = Instance.new("UICorner")
     closeConfigCorner.CornerRadius = UDim.new(0, 8)
     closeConfigCorner.Parent = closeConfigButton
-    
-    local blurEffect = Instance.new("Frame")
-    blurEffect.Name = "BlurEffect"
-    blurEffect.Size = UDim2.new(1, 0, 1, 0)
-    blurEffect.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    blurEffect.BackgroundTransparency = 0.7
-    blurEffect.BorderSizePixel = 0
-    blurEffect.Visible = false
-    blurEffect.ZIndex = 4
-    blurEffect.Parent = contentFrame
     
     local resizeHandle = Instance.new("ImageButton")
     resizeHandle.Name = "ResizeHandle"
@@ -435,8 +436,8 @@ function CatLib:CreateWindow(config)
     
     local MIN_WIDTH = 400
     local MIN_HEIGHT = 300
-    local MAX_WIDTH = 1200
-    local MAX_HEIGHT = 800
+    local MAX_WIDTH = 900
+    local MAX_HEIGHT = 600
     
     local resizing = false
     local resizeStart
@@ -521,6 +522,7 @@ function CatLib:CreateWindow(config)
         createTween(closeButton, {Size = UDim2.new(0, 28, 0, 28)}, 0.1):Play()
         wait(0.1)
         createTween(closeButton, {Size = UDim2.new(0, 32, 0, 32)}, 0.1):Play()
+        blurEffect.Visible = true
         confirmDialog.Visible = true
     end)
     
@@ -545,6 +547,7 @@ function CatLib:CreateWindow(config)
         createTween(noButton, {Size = UDim2.new(0, 120, 0, 35)}, 0.1):Play()
         wait(0.1)
         confirmDialog.Visible = false
+        blurEffect.Visible = false
     end)
     
     maximizeButton.MouseButton1Click:Connect(function()
@@ -574,6 +577,9 @@ function CatLib:CreateWindow(config)
         wait(0.1)
         createTween(minimizeButton, {Size = UDim2.new(0, 32, 0, 32)}, 0.1):Play()
         wait(0.1)
+        
+        originalSize = mainFrame.Size
+        originalPosition = mainFrame.Position
         
         local minTween = createTween(mainFrame, {
             Size = UDim2.new(0, 0, 0, 0),
