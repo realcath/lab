@@ -1444,6 +1444,14 @@ function CatLib:CreateWindow(config)
 			sliderFillCorner.CornerRadius = UDim.new(1, 0)
 			sliderFillCorner.Parent = sliderFill
 			
+			local sliderButton = Instance.new("TextButton")
+			sliderButton.Size = UDim2.new(0, 16, 0, 16)
+			sliderButton.Position = UDim2.new(0, -8, 0.5, -8)
+			sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			sliderButton.BorderSizePixel = 0
+			sliderButton.Text = ""
+			sliderButton.Parent = sliderBar
+			
 			local sliderButtonCorner = Instance.new("UICorner")
 			sliderButtonCorner.CornerRadius = UDim.new(1, 0)
 			sliderButtonCorner.Parent = sliderButton
@@ -1456,6 +1464,7 @@ function CatLib:CreateWindow(config)
 				currentValue = math.clamp(value, min, max)
 				local percentage = (currentValue - min) / (max - min)
 				sliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+				sliderButton.Position = UDim2.new(percentage, -8, 0.5, -8)
 				valueInput.Text = tostring(math.floor(currentValue))
 				
 				if config.Callback then
