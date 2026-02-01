@@ -432,6 +432,19 @@ function CatLib:CreateWindow(config)
     restoreCorner.CornerRadius = UDim.new(0, 6)
     restoreCorner.Parent = restoreButton
     
+    local keybindIndicator = Instance.new("TextLabel")
+    keybindIndicator.Name = "KeybindIndicator"
+    keybindIndicator.Size = UDim2.new(0, 100, 0, 20)
+    keybindIndicator.Position = UDim2.new(0.5, -50, 1, -25)
+    keybindIndicator.BackgroundTransparency = 1
+    keybindIndicator.Text = "LeftAlt"
+    keybindIndicator.TextColor3 = Color3.fromRGB(255, 255, 255)
+    keybindIndicator.TextTransparency = 0.7
+    keybindIndicator.TextSize = 12
+    keybindIndicator.Font = Enum.Font.Gotham
+    keybindIndicator.ZIndex = 2
+    keybindIndicator.Parent = mainFrame
+    
     makeDraggable(mainFrame, header)
     
     local MIN_WIDTH = 400
