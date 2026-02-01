@@ -1532,29 +1532,29 @@ function CatLib:CreateWindow(config)
 			dropdownButton.Text = ""
 			dropdownButton.Parent = dropdownFrame
 			
-			local dropdownTitle = Instance.new("TextLabel")
-			dropdownTitle.Size = UDim2.new(1, -90, 0, 18)
-			dropdownTitle.Position = UDim2.new(0, 12, 0, 8)
-			dropdownTitle.BackgroundTransparency = 1
-			dropdownTitle.Text = config.Name or "Dropdown"
-			dropdownTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-			dropdownTitle.TextSize = 14
-			dropdownTitle.Font = Enum.Font.GothamBold
-			dropdownTitle.TextXAlignment = Enum.TextXAlignment.Left
-			dropdownTitle.Parent = dropdownFrame
-			
 			local selectedLabel = Instance.new("TextLabel")
-			selectedLabel.Size = UDim2.new(0, 80, 0, 18)
-			selectedLabel.Position = UDim2.new(1, -102, 0, 8)
-			selectedLabel.BackgroundTransparency = 1
-			selectedLabel.Text = config.Default or (config.Options and config.Options[1]) or "None"
-			selectedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			selectedLabel.TextTransparency = 0.5
-			selectedLabel.TextSize = 12
-			selectedLabel.Font = Enum.Font.Gotham
-			selectedLabel.TextXAlignment = Enum.TextXAlignment.Right
-			selectedLabel.TextTruncate = Enum.TextTruncate.AtEnd
-			selectedLabel.Parent = dropdownFrame
+            selectedLabel.Size = UDim2.new(0, 80, 0, 18)
+            selectedLabel.Position = UDim2.new(0, 12, 0, 8)
+            selectedLabel.BackgroundTransparency = 1
+            selectedLabel.Text = config.Default or (config.Options and config.Options[1]) or "None"
+            selectedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            selectedLabel.TextTransparency = 0.5
+            selectedLabel.TextSize = 12
+            selectedLabel.Font = Enum.Font.Gotham
+            selectedLabel.TextXAlignment = Enum.TextXAlignment.Left
+            selectedLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            selectedLabel.Parent = dropdownFrame
+
+           local dropdownTitle = Instance.new("TextLabel")
+          dropdownTitle.Size = UDim2.new(1, -140, 0, 18)
+          dropdownTitle.Position = UDim2.new(0, 100, 0, 8)
+          dropdownTitle.BackgroundTransparency = 1
+         dropdownTitle.Text = config.Name or "Dropdown"
+         dropdownTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+         dropdownTitle.TextSize = 14
+         dropdownTitle.Font = Enum.Font.GothamBold
+         dropdownTitle.TextXAlignment = Enum.TextXAlignment.Left
+         dropdownTitle.Parent = dropdownFrame
 			
 			local dropdownIcon = Instance.new("ImageLabel")
 			dropdownIcon.Size = UDim2.new(0, 20, 0, 20)
