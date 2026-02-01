@@ -840,7 +840,7 @@ function CatLib:CreateWindow(config)
         
         local tabPadding = Instance.new("UIPadding")
         tabPadding.PaddingTop = UDim.new(0, 8)
-        tabPadding.PaddingLeft = UDim2.new(0, 8)
+        tabPadding.PaddingLeft = UDim.new(0, 8)
         tabPadding.PaddingRight = UDim.new(0, 8)
         tabPadding.PaddingBottom = UDim.new(0, 8)
         tabPadding.Parent = tabContainer
