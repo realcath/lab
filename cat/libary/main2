@@ -143,6 +143,20 @@ function CatLib:CreateWindow(config)
     maxCorner.CornerRadius = UDim.new(0, 8)
     maxCorner.Parent = maximizeButton
     
+    local configButton = Instance.new("ImageButton")
+    configButton.Name = "ConfigButton"
+    configButton.Size = UDim2.new(0, 32, 0, 32)
+    configButton.Position = UDim2.new(1, -164, 0, 9)
+    configButton.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+    configButton.BorderSizePixel = 0
+    configButton.Image = "rbxassetid://96457830014743"
+    configButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    configButton.Parent = header
+    
+    local configCorner = Instance.new("UICorner")
+    configCorner.CornerRadius = UDim.new(0, 8)
+    configCorner.Parent = configButton
+    
     local minimizeButton = Instance.new("ImageButton")
     minimizeButton.Name = "MinimizeButton"
     minimizeButton.Size = UDim2.new(0, 32, 0, 32)
@@ -267,6 +281,55 @@ function CatLib:CreateWindow(config)
     verticalSeparator.BorderSizePixel = 0
     verticalSeparator.Parent = contentFrame
     
+    local configMenu = Instance.new("Frame")
+    configMenu.Name = "ConfigMenu"
+    configMenu.Size = UDim2.new(0, 0, 1, 0)
+    configMenu.Position = UDim2.new(0, 0, 0, 0)
+    configMenu.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    configMenu.BorderSizePixel = 0
+    configMenu.Visible = false
+    configMenu.ZIndex = 5
+    configMenu.Parent = contentFrame
+    
+    local configMenuCorner = Instance.new("UICorner")
+    configMenuCorner.CornerRadius = UDim.new(0, 12)
+    configMenuCorner.Parent = configMenu
+    
+    local closeConfigButton = Instance.new("ImageButton")
+    closeConfigButton.Name = "CloseConfigButton"
+    closeConfigButton.Size = UDim2.new(0, 28, 0, 28)
+    closeConfigButton.Position = UDim2.new(0, 10, 0, 10)
+    closeConfigButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    closeConfigButton.BorderSizePixel = 0
+    closeConfigButton.Image = "rbxassetid://113187532560127"
+    closeConfigButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    closeConfigButton.ZIndex = 6
+    closeConfigButton.Parent = configMenu
+    
+    local closeConfigCorner = Instance.new("UICorner")
+    closeConfigCorner.CornerRadius = UDim.new(0, 8)
+    closeConfigCorner.Parent = closeConfigButton
+    
+    local blurEffect = Instance.new("Frame")
+    blurEffect.Name = "BlurEffect"
+    blurEffect.Size = UDim2.new(1, 0, 1, 0)
+    blurEffect.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    blurEffect.BackgroundTransparency = 0.7
+    blurEffect.BorderSizePixel = 0
+    blurEffect.Visible = false
+    blurEffect.ZIndex = 4
+    blurEffect.Parent = contentFrame
+    
+    local resizeHandle = Instance.new("ImageButton")
+    resizeHandle.Name = "ResizeHandle"
+    resizeHandle.Size = UDim2.new(0, 20, 0, 20)
+    resizeHandle.Position = UDim2.new(1, -20, 1, -20)
+    resizeHandle.BackgroundTransparency = 1
+    resizeHandle.Image = "rbxassetid://87242330210229"
+    resizeHandle.ImageColor3 = Color3.fromRGB(150, 150, 150)
+    resizeHandle.ZIndex = 10
+    resizeHandle.Parent = mainFrame
+    
     local confirmDialog = Instance.new("Frame")
     confirmDialog.Name = "ConfirmDialog"
     confirmDialog.Size = UDim2.new(0, 300, 0, 150)
@@ -369,6 +432,78 @@ function CatLib:CreateWindow(config)
     restoreCorner.Parent = restoreButton
     
     makeDraggable(mainFrame, header)
+    
+    local MIN_WIDTH = 400
+    local MIN_HEIGHT = 300
+    local MAX_WIDTH = 1200
+    local MAX_HEIGHT = 800
+    
+    local resizing = false
+    local resizeStart
+    local startSize
+    
+    resizeHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            resizing = true
+            resizeStart = input.Position
+            startSize = mainFrame.Size
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    resizing = false
+                end
+            end)
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - resizeStart
+            local newWidth = math.clamp(startSize.X.Offset + delta.X, MIN_WIDTH, MAX_WIDTH)
+            local newHeight = math.clamp(startSize.Y.Offset + delta.Y, MIN_HEIGHT, MAX_HEIGHT)
+            mainFrame.Size = UDim2.new(0, newWidth, 0, newHeight)
+        end
+    end)
+    
+    local configMenuOpen = false
+    
+    configButton.MouseButton1Click:Connect(function()
+        createTween(configButton, {Size = UDim2.new(0, 28, 0, 28)}, 0.1):Play()
+        wait(0.1)
+        createTween(configButton, {Size = UDim2.new(0, 32, 0, 32)}, 0.1):Play()
+        
+        if not configMenuOpen then
+            configMenu.Size = UDim2.new(0, 0, 1, 0)
+            configMenu.Visible = true
+            blurEffect.Visible = true
+            createTween(configMenu, {Size = UDim2.new(0, 250, 1, 0)}, 0.3):Play()
+            configMenuOpen = true
+        end
+    end)
+    
+    closeConfigButton.MouseButton1Click:Connect(function()
+        createTween(closeConfigButton, {Size = UDim2.new(0, 24, 0, 24)}, 0.1):Play()
+        wait(0.1)
+        createTween(closeConfigButton, {Size = UDim2.new(0, 28, 0, 28)}, 0.1):Play()
+        
+        local closeTween = createTween(configMenu, {Size = UDim2.new(0, 0, 1, 0)}, 0.3)
+        closeTween:Play()
+        closeTween.Completed:Wait()
+        configMenu.Visible = false
+        blurEffect.Visible = false
+        configMenuOpen = false
+    end)
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == Enum.KeyCode.LeftControl then
+            if mainFrame.Visible then
+                mainFrame.Visible = false
+                minimizedBar.Visible = false
+            else
+                mainFrame.Visible = true
+            end
+        end
+    end)
     
     local isMaximized = false
     local originalSize = mainFrame.Size
