@@ -1444,6 +1444,10 @@ function CatLib:CreateWindow(config)
 			sliderFillCorner.CornerRadius = UDim.new(1, 0)
 			sliderFillCorner.Parent = sliderFill
 			
+			local sliderButtonCorner = Instance.new("UICorner")
+			sliderButtonCorner.CornerRadius = UDim.new(1, 0)
+			sliderButtonCorner.Parent = sliderButton
+			
 			local min = config.Min or 0
 			local max = config.Max or 100
 			local currentValue = config.Default or min
