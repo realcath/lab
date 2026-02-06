@@ -1,5 +1,7 @@
 # Catlib
 
+<img src="visual/banner.gif" alt="banner">
+
 - Load UI
 
 ```lua
