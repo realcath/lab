@@ -86,7 +86,7 @@ tab:AddToggleConfirmation({
 	Name = "Toggle Confirmation",
 	Callback = function(value)
 	end
-}
+})
 ```
 
 #
