@@ -68,7 +68,7 @@ window:Notify({
 - Create Toggle
 
 ```lua
-tab1:AddToggle({
+tab:AddToggle({
 	Name = "Toggle",
     Description = "My Toggle",
 	Default = false,
