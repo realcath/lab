@@ -77,6 +77,8 @@ tab:AddToggle({
 })
 ```
 
+<img src="visual/toggle.png" alt="toggle">
+
 #
 
 - Create ToggleConfirmation
@@ -88,6 +90,8 @@ tab:AddToggleConfirmation({
 	end
 })
 ```
+
+<img src="visual/togglecom.png" alt="togglecom">
 
 #
 
@@ -101,6 +105,8 @@ tab:AddButton({
 })
 ```
 
+<img src="visual/button.png" alt="button">
+
 #
 
 - Create ButtonConfirmation
@@ -112,6 +118,8 @@ tab:AddButtonConfirmation({
 	end
 })
 ```
+
+<img src="visual/buttoncom.png" alt="buttoncom">
 
 #
 
@@ -126,6 +134,8 @@ tab:AddTextBox({
 	end
 })
 ```
+
+<img src="visual/textbox.png" alt="textbox">
 
 #
 
@@ -142,6 +152,8 @@ tab:AddSlider({
 })
 ```
 
+<img src="visual/slider.png" alt="slider">
+
 #
 
 - Create Dropdown
@@ -155,6 +167,8 @@ tab:AddDropdown({
 	end
 })
 ```
+
+<img src="visual/drop.png" alt="drop">
 
 #
 
@@ -170,6 +184,8 @@ tab:AddMultiDropdown({
 })
 ```
 
+<img src="visual/multidrop.png" alt="multidrop">
+
 #
 
 - Create Paragraph
@@ -180,6 +196,8 @@ tab:AddParagraph({
 	Text = "This is paragraph text"
 })
 ```
+
+<img src="visual/paragraph.png" alt="paragraph">
 
 #
 
@@ -192,5 +210,7 @@ tab:AddDiscordInvite({
 	Link = "discord.gg/example",
 })
 ```
+
+<img src="visual/invite.png" alt="invite">
 
 #
