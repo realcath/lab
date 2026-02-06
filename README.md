@@ -6,7 +6,7 @@
 local CatLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/realcath/lab/refs/heads/main/cat/libary/catlibz"))()
 ```
 
--
+#
 
 - Create Window
 
@@ -26,7 +26,7 @@ local window = CatLib:CreateWindow({
 })
 ```
 
--
+#
 
 - Create Toggle
 
@@ -40,6 +40,6 @@ tab1:AddToggle({
 })
 ```
 
--
+#
 
 - Create ToggleConfirmation
