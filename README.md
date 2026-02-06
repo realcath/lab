@@ -32,6 +32,39 @@ local window = CatLib:CreateWindow({
 
 #
 
+- Create Tab
+
+```lua
+local tab = window:CreateTab({
+	Name = "Main",
+	Title = "Main",
+	Subtitle = "Main features",
+	Icon = "rbxassetid://"
+})
+```
+
+#
+
+- Create Section
+
+```lua
+tab:AddSection("Tab")
+```
+
+#
+
+- Create Notify
+
+```lua
+window:Notify({
+	Title = "Welcome!",
+	Text = "CatLib loaded successfully",
+	Duration = 5
+})
+```
+
+#
+
 - Create Toggle
 
 ```lua
