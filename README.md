@@ -1,5 +1,7 @@
 # Catlib
 
+- https://discord.gg/cathub
+
 <img src="visual/banner.gif" alt="banner">
 
 - Load UI
