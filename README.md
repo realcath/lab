@@ -33,7 +33,7 @@ local window = CatLib:CreateWindow({
 ```lua
 tab1:AddToggle({
 	Name = "Toggle",
-	Description = "My Toggle",
+    Description = "My Toggle",
 	Default = false,
 	Callback = function(value)
 	end
@@ -43,3 +43,117 @@ tab1:AddToggle({
 #
 
 - Create ToggleConfirmation
+
+```lua
+tab:AddToggleConfirmation({
+	Name = "Toggle Confirmation",
+	Callback = function(value)
+	end
+}
+```
+
+#
+
+- Create Button
+
+```lua
+tab:AddButton({
+	Name = "Button Example",
+	Callback = function()
+	end
+})
+```
+
+#
+
+- Create ButtonConfirmation
+
+```lua
+tab:AddButtonConfirmation({
+	Name = "Button Confirmation",
+	Callback = function()
+	end
+})
+```
+
+#
+
+- Create TextBox
+
+```lua
+tab:AddTextBox({
+	Name = "TextBox Example",
+	Placeholder = "Enter your name...",
+	Default = "",
+	Callback = function(text)
+	end
+})
+```
+
+#
+
+- Create Slider
+
+```lua
+tab:AddSlider({
+	Name = "Slider Example",
+	Min = 0,
+	Max = 100,
+	Default = 50,
+	Callback = function(value)
+	end
+})
+```
+
+#
+
+- Create Dropdown
+
+```lua
+tab:AddDropdown({
+	Name = "Dropdown Example",
+	Options = {"Option 1", "Option 2", "Option 3"},
+	Default = "Option 1",
+	Callback = function(option)
+	end
+})
+```
+
+#
+
+- Create MultiDropdown
+
+```lua
+tab:AddMultiDropdown({
+	Name = "Multi Dropdown",
+	Options = {"Item 1", "Item 2", "Item 3"},
+	Default = {},
+	Callback = function(options)
+	end
+})
+```
+
+#
+
+- Create Paragraph
+
+```lua
+tab:AddParagraph({
+	Title = "Paragraph Title",
+	Text = "This is paragraph text"
+})
+```
+
+#
+
+- Create DiscordInvite
+
+```lua
+tab:AddDiscordInvite({
+	Icon = "rbxassetid://",
+	ServerName = "My Discord Server",
+	Link = "discord.gg/example",
+})
+```
+
+#
